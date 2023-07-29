@@ -1,4 +1,4 @@
-CXX_STD = CXX11
-PKG_LIBS = `pkg-config --libs grpc`
-PKG_CXXFLAGS = `pkg-config --cflags grpc`
-
+CXX_STD = CXX17
+PKG_LIBS = `pkg-config --libs grpc` -lupb -lre2 -lssl -lcrypto -lgrpc_authorization_provider -lgrpc_unsecure -lcares -laddress_sorting -L/usr/lib -lsystemd
+PKG_CXXFLAGS = -pthread -DCARES_STATICLIB -DNOMINMAX -I/home/sammoham/.local/include
+PKG_CFLAGS = `pkg-config --cflags grpc` 

@@ -1,5 +1,6 @@
 #include <Rcpp.h>
 #include <grpc/grpc.h>
+#include <grpc/grpc_security.h>
 #include <grpc/impl/codegen/byte_buffer_reader.h>
 #include <grpc/slice.h>
 
@@ -47,8 +48,11 @@ RawVector fetch(CharacterVector server, CharacterVector method, RawVector reques
   
   
   const grpc_slice *sp = &server_slice;
-    
-  grpc_channel *channel = grpc_insecure_channel_create(server[0], NULL, RESERVED);
+
+  // grpc_channel *channel = grpc_insecure_channel_create(server[0], NULL, RESERVED);
+  // TODO : check what RESERVED arg is
+  grpc_channel_credentials *creds = grpc_insecure_credentials_create();
+  grpc_channel *channel = grpc_channel_create(server[0], creds, NULL); 
   
   gpr_timespec deadline = gpr_time_add(gpr_now(GPR_CLOCK_REALTIME), gpr_time_from_millis(5000, GPR_TIMESPAN));
   
@@ -69,13 +73,18 @@ RawVector fetch(CharacterVector server, CharacterVector method, RawVector reques
   int metadata_length = metadata.length() / 2;
   grpc_metadata meta_c[metadata_length];
 
-  for(int i = 0; i < metadata_length; i++) {
+/*  for(int i = 0; i < metadata_length; i++) {
     meta_c[i] = {grpc_slice_from_static_string(metadata[i * 2]),
         grpc_slice_from_static_string(metadata[i * 2 + 1]),
         0,
         {{nullptr, nullptr, nullptr, nullptr}}};
   }
+*/
 
+  for(int i=0; i < metadata_length; i++) {
+    meta_c[i].key = grpc_slice_from_static_string(metadata[i * 2]);
+    meta_c[i].value = grpc_slice_from_static_string(metadata[i * 2 + 1]);
+  }
   grpc_metadata_array initial_metadata_recv;
   grpc_metadata_array trailing_metadata_recv;
   grpc_metadata_array request_metadata_recv;
