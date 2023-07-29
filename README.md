@@ -63,6 +63,16 @@ Copyright 2015 Google Inc, 2017 Neal Fultz
 
 See `install` for my installation notes...
 
+## Install grpc r package on local
+To build, run the command:
+
+    R CMD build grpcR
+
+To install, run the command
+
+    R CMD INSTALL grpcR_0.2.0.tar.gz 
+    #or replace with your file name after build
+
 
 ## Examples
 
